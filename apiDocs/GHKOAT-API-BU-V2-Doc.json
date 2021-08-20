@@ -1,0 +1,1295 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "GHKOAT API - BU",
+        "description": "Greatest Home Kit Of All Time!",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "https://apim-ghkoat-eus-dev.azure-api.net/bu-updated"
+        }
+    ],
+    "paths": {
+        "/api/kit/order": {
+            "post": {
+                "tags": [
+                    "BU"
+                ],
+                "summary": "Create Kit Orders - Requests that kits be ordered from the appropriate Kit Vendor",
+                "description": "## Potential Response Codes + Data\r\n\r\nDepending on the input data being sent, there are 3 potential results that will be returned\r\nin the event of a successful call. These scenarios depend on the orders themselves, whether those\r\norders have previously been sent, and the current status of those orders. \r\n            \r\nThe 3 scenarios are:\r\n            \r\n* All New Orders -- **202 response**\r\n* All Successfully Completed Orders -- **200 response**\r\n* A Mix -- **207 response**\r\n            \r\nReview the Responses for more details",
+                "operationId": "post-api-kit-order",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.KitOrderRequest"
+                            },
+                            "example": {
+                                "orders": [
+                                    {
+                                        "id": "string",
+                                        "isTestOrder": true,
+                                        "priority": 0,
+                                        "requestedDateTime": "string",
+                                        "originatingBusinessUnit": "string",
+                                        "orderDetails": [
+                                            {
+                                                "orderDetailId": "string",
+                                                "kit": "string",
+                                                "quantity": 0,
+                                                "participantInfo": {
+                                                    "firstName": "string",
+                                                    "lastName": "string",
+                                                    "middleInitial": "string",
+                                                    "phoneNumber": "string"
+                                                },
+                                                "outboundShippingAddress": {
+                                                    "companyName": "string",
+                                                    "isBusinessAddress": true,
+                                                    "addressLine1": "string",
+                                                    "addressLine2": "string",
+                                                    "city": "string",
+                                                    "state": "string",
+                                                    "zipCode": "string",
+                                                    "country": "string"
+                                                },
+                                                "outboundShippingPreferences": {
+                                                    "carrierName": "string",
+                                                    "shippingClass": "string",
+                                                    "isSaturdayDeliveryRequested": true
+                                                },
+                                                "inboundShippingAddress": {
+                                                    "companyName": "string",
+                                                    "isBusinessAddress": true,
+                                                    "addressLine1": "string",
+                                                    "addressLine2": "string",
+                                                    "city": "string",
+                                                    "state": "string",
+                                                    "zipCode": "string",
+                                                    "country": "string"
+                                                },
+                                                "inboundShippingPreferences": {
+                                                    "carrierName": "string",
+                                                    "shippingClass": "string",
+                                                    "isSaturdayDeliveryRequested": true
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "kitActivationSiteUrl": "string"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "All Successfully Completed Orders -- Each kit order’s order details are fulfilled.\r\nAll the requested kits have already been shipped.\r\nThe body will contain all the shipping information pertaining to those kits.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKitOrderPost200ApplicationJsonResponse"
+                                },
+                                "example": [
+                                    {
+                                        "currentStatus": "Complete",
+                                        "previousStatus": "Complete",
+                                        "originatingBusinessUnit": "string",
+                                        "orderId": "string",
+                                        "orderDetailId": "string",
+                                        "submissionCount": 0,
+                                        "kitShipments": [
+                                            {
+                                                "kitId": "string",
+                                                "verificationId": "string",
+                                                "outboundShipmentInfo": {
+                                                    "trackingNumber": "string",
+                                                    "shippedDateTime": "string",
+                                                    "shippingClass": "string",
+                                                    "shippingCarrier": "string"
+                                                },
+                                                "inboundShipmentInfo": {
+                                                    "trackingNumber": "string",
+                                                    "shippedDateTime": "string",
+                                                    "shippingClass": "string",
+                                                    "shippingCarrier": "string"
+                                                }
+                                            }
+                                        ],
+                                        "rejection": {
+                                            "reasonCode": "string",
+                                            "reasonDescription": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "202": {
+                        "description": "All New Orders -- Each Order requested is new to the system (has not been sent before).\r\nAll the requested kits are new and being submitted to the Kit Vendor.\r\nThe body will be *empty*."
+                    },
+                    "207": {
+                        "description": "A Mix -- A mix of any of the following statuses: new orders, resubmitted orders (errored or no status),\r\n  and completed orders.\r\nSome requested kits are new and being submitted to the Kit Vendor.\r\nOthers may be either already shipped (and not re-submitted to the Kit Vendor), or\r\npreviously rejected, and are now being re-submitted to the Kit Vendor.\r\n             \r\nThe body will contain all the current information the system has, along with\r\nrecords denoting things that are being \"Resubmitted\".",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKitOrderPost207ApplicationJsonResponse"
+                                },
+                                "example": [
+                                    {
+                                        "currentStatus": "Complete",
+                                        "previousStatus": "Complete",
+                                        "originatingBusinessUnit": "string",
+                                        "orderId": "string",
+                                        "orderDetailId": "string",
+                                        "submissionCount": 0,
+                                        "kitShipments": [
+                                            {
+                                                "kitId": "string",
+                                                "verificationId": "string",
+                                                "outboundShipmentInfo": {
+                                                    "trackingNumber": "string",
+                                                    "shippedDateTime": "string",
+                                                    "shippingClass": "string",
+                                                    "shippingCarrier": "string"
+                                                },
+                                                "inboundShipmentInfo": {
+                                                    "trackingNumber": "string",
+                                                    "shippedDateTime": "string",
+                                                    "shippingClass": "string",
+                                                    "shippingCarrier": "string"
+                                                }
+                                            }
+                                        ],
+                                        "rejection": {
+                                            "reasonCode": "string",
+                                            "reasonDescription": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "There are data validation issues.\r\nThe body will contain a list of strings describing each validation error\r\n            \r\n    [\r\n        \"Orders[0].Priority: 'Priority' must be between 1 and 10. You entered 0.\",\r\n        \"Orders[0].OrderDetails[0].Quantity: 'Quantity' must be greater than or equal to '1'.\",\r\n    ]",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKitOrderPost400ApplicationJsonResponse"
+                                },
+                                "example": [
+                                    "string"
+                                ]
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected error has occured"
+                    }
+                }
+            }
+        },
+        "/api/kit/lab-order": {
+            "post": {
+                "tags": [
+                    "BU"
+                ],
+                "summary": "Create Lab Orders - Requests Lab Orders to be sent to the Quanum Hub after optional approval from PWN",
+                "description": "## Potential Response Codes + Data\r\n\r\nDepending on the input data being sent, there are 3 potential results that will be returned\r\nin the event of a successful call. These scenarios depend on the orders themselves, whether those\r\norders have previously been sent, and the current status of those orders. \r\n            \r\nThe 3 scenarios are:\r\n            \r\n* All New Orders -- **202 response**\r\n* All Successfully Completed Orders -- **200 response**\r\n* A Mix -- **207 response**\r\n            \r\nReview the Responses for more details\r\n            \r\n## Kit Order Not Required\r\n            \r\nAt this point, We do **NOT** require an existing Kit Order  in the System for the Lab Order to be processed.\r\nWe decided it provided more flexibility to allow Lab Orders to be placed, regardless.\r\nThis could change in the future, however.",
+                "operationId": "post-api-kit-lab-order",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.LabOrdersRequest"
+                            },
+                            "example": {
+                                "labOrderRequest": [
+                                    {
+                                        "originatingBusinessUnit": "string",
+                                        "orderId": "string",
+                                        "orderDetailId": "string",
+                                        "employer": {
+                                            "clientNumber": "string",
+                                            "medicalDirector": {
+                                                "name": {
+                                                    "firstName": "string",
+                                                    "lastName": "string",
+                                                    "middleInitial": "string"
+                                                },
+                                                "npi": "string",
+                                                "upin": "string"
+                                            },
+                                            "medicalDirectorApproved": true
+                                        },
+                                        "location": {
+                                            "businessUnitCode": "string",
+                                            "code": "string",
+                                            "id": "string"
+                                        },
+                                        "memberAccountId": "string",
+                                        "memberOrderId": 0,
+                                        "observationDateTime": "string",
+                                        "orderDate": "string",
+                                        "patientDemographics": {
+                                            "firstName": "string",
+                                            "lastName": "string",
+                                            "middleInitial": "string",
+                                            "birthDate": "string",
+                                            "gender": "string",
+                                            "address": {
+                                                "line1": "string",
+                                                "line2": "string",
+                                                "city": "string",
+                                                "state": "string",
+                                                "zipCode": "string"
+                                            },
+                                            "email": "string",
+                                            "phone": {
+                                                "areaCode": "string",
+                                                "prefix": "string",
+                                                "number": "string"
+                                            },
+                                            "otherPhone": {
+                                                "areaCode": "string",
+                                                "prefix": "string",
+                                                "number": "string"
+                                            }
+                                        },
+                                        "requestType": "string",
+                                        "serviceDetail": {
+                                            "diagnosis": "string",
+                                            "service": {
+                                                "fastingStatus": true,
+                                                "serviceCodes": [
+                                                    "string"
+                                                ]
+                                            }
+                                        },
+                                        "tosAccepted": "string",
+                                        "qlsReqNumber": "string",
+                                        "verificationId": "string",
+                                        "pwnOversightRequired": true,
+                                        "askedOnEntry": [
+                                            {
+                                                "question": "string",
+                                                "response": "string",
+                                                "resultCode": "string"
+                                            }
+                                        ],
+                                        "billing": {
+                                            "billingSystemId": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "All Successfully Completed Orders -- Each lab order has been successfully sent to QuanumHub.\r\nThe body will contain information about the order, including the PWN Physician Info and Quanum Hub\r\nConfirmation Code.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKitLab-orderPost200ApplicationJsonResponse"
+                                },
+                                "example": [
+                                    {
+                                        "originatingBusinessUnit": "string",
+                                        "orderId": "string",
+                                        "orderDetailId": "string",
+                                        "kitId": "string",
+                                        "currentStatus": "Complete",
+                                        "previousStatus": "Complete",
+                                        "submissionCount": 0,
+                                        "labOrderStatus": {
+                                            "originatingBusinessUnit": "string",
+                                            "orderId": "string",
+                                            "orderDetailId": "string",
+                                            "kitId": "string",
+                                            "pwnOrderSummary": {
+                                                "pwnOrderId": 0,
+                                                "physicianReview": {
+                                                    "name": "string",
+                                                    "firstName": "string",
+                                                    "lastName": "string",
+                                                    "npi": "string",
+                                                    "reviewedAt": "string",
+                                                    "upin": "string"
+                                                }
+                                            },
+                                            "quanumHubConfirmationNumber": "string",
+                                            "exceptionData": "string"
+                                        },
+                                        "errorDescription": "string"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "202": {
+                        "description": "All New Orders -- Each Order requested is new to the system (has not been sent before).\r\nAll the requested lab orders are new and being submitted to PWN/Quanum.\r\nThe body will be *empty*."
+                    },
+                    "207": {
+                        "description": "A Mix -- A mix of any of the following statuses: new lab orders, resubmitted lab orders (previously errored),\r\n  and completed orders.\r\nSome requested orders are new and being submitted to PWN/Quanum Hub.\r\nOthers may be either already shipped (and not re-submitted to PWN/Quanum Hub), or\r\npreviously rejected, and are now being re-submitted to PWN/Quanum Hub.\r\n             \r\nThe body will contain all the current information the system has, along with\r\nrecords denoting things that are being \"Resubmitted\".",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKitLab-orderPost207ApplicationJsonResponse"
+                                },
+                                "example": [
+                                    {
+                                        "originatingBusinessUnit": "string",
+                                        "orderId": "string",
+                                        "orderDetailId": "string",
+                                        "kitId": "string",
+                                        "currentStatus": "Complete",
+                                        "previousStatus": "Complete",
+                                        "submissionCount": 0,
+                                        "labOrderStatus": {
+                                            "originatingBusinessUnit": "string",
+                                            "orderId": "string",
+                                            "orderDetailId": "string",
+                                            "kitId": "string",
+                                            "pwnOrderSummary": {
+                                                "pwnOrderId": 0,
+                                                "physicianReview": {
+                                                    "name": "string",
+                                                    "firstName": "string",
+                                                    "lastName": "string",
+                                                    "npi": "string",
+                                                    "reviewedAt": "string",
+                                                    "upin": "string"
+                                                }
+                                            },
+                                            "quanumHubConfirmationNumber": "string",
+                                            "exceptionData": "string"
+                                        },
+                                        "errorDescription": "string"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "There are data validation issues.\r\nThe body will contain a list of strings describing each validation error\r\n            \r\n    [\r\n      \"LabOrderRequest[0].Employer.MedicalDirector.Name.MiddleInitial: The length of 'Middle Initial' must be 1 characters or fewer. You entered 6 characters.\"\r\n    ]",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKitLab-orderPost400ApplicationJsonResponse"
+                                },
+                                "example": [
+                                    "string"
+                                ]
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected error has occured"
+                    }
+                }
+            }
+        },
+        "/api/openapi/json": {
+            "get": {
+                "summary": "OpenAPI JSON",
+                "description": "Get OpenAPI/Swagger specs",
+                "operationId": "openapi-json",
+                "responses": {
+                    "200": {
+                        "description": null
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Ghkoat.Core.Models.ParticipantInfo": {
+                "required": [
+                    "firstName",
+                    "lastName",
+                    "phoneNumber"
+                ],
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "description": "Participant's First Name"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "description": "Participant's Last Name"
+                    },
+                    "middleInitial": {
+                        "maxLength": 1,
+                        "type": "string",
+                        "description": "Participant's middle initial",
+                        "nullable": true
+                    },
+                    "phoneNumber": {
+                        "type": "string",
+                        "description": "Participant Phone Number",
+                        "format": "tel"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.Address": {
+                "required": [
+                    "addressLine1",
+                    "city",
+                    "state",
+                    "zipCode"
+                ],
+                "type": "object",
+                "properties": {
+                    "companyName": {
+                        "type": "string",
+                        "description": "The Company Name, if any",
+                        "nullable": true
+                    },
+                    "isBusinessAddress": {
+                        "type": "boolean",
+                        "description": "If this is a business address"
+                    },
+                    "addressLine1": {
+                        "type": "string",
+                        "description": "Address Line 1"
+                    },
+                    "addressLine2": {
+                        "type": "string",
+                        "description": "Address Line 2",
+                        "nullable": true
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "State"
+                    },
+                    "zipCode": {
+                        "type": "string",
+                        "description": "ZipCode"
+                    },
+                    "country": {
+                        "type": "string",
+                        "description": "Country",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.ShippingPreferences": {
+                "required": [
+                    "carrierName",
+                    "isSaturdayDeliveryRequested",
+                    "shippingClass"
+                ],
+                "type": "object",
+                "properties": {
+                    "carrierName": {
+                        "type": "string",
+                        "description": "Fedex, UPS, etc."
+                    },
+                    "shippingClass": {
+                        "type": "string",
+                        "description": "Overnight, 2-day, etc"
+                    },
+                    "isSaturdayDeliveryRequested": {
+                        "type": "boolean",
+                        "description": "If Saturday delivery was requested"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Specifies the preferences for kit shipment"
+            },
+            "Ghkoat.Core.Models.KitOrderDetail": {
+                "required": [
+                    "inboundShippingAddress",
+                    "inboundShippingPreferences",
+                    "kit",
+                    "orderDetailId",
+                    "outboundShippingAddress",
+                    "outboundShippingPreferences",
+                    "participantInfo",
+                    "quantity"
+                ],
+                "type": "object",
+                "properties": {
+                    "orderDetailId": {
+                        "type": "string",
+                        "description": "The Order Detail ID"
+                    },
+                    "kit": {
+                        "type": "string",
+                        "description": "The Kit Type being requested"
+                    },
+                    "quantity": {
+                        "maximum": 2147483647,
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Quantity of kits requested",
+                        "format": "int32"
+                    },
+                    "participantInfo": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.ParticipantInfo"
+                    },
+                    "outboundShippingAddress": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Address"
+                    },
+                    "outboundShippingPreferences": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.ShippingPreferences"
+                    },
+                    "inboundShippingAddress": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Address"
+                    },
+                    "inboundShippingPreferences": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.ShippingPreferences"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.Order": {
+                "required": [
+                    "id",
+                    "orderDetails",
+                    "originatingBusinessUnit",
+                    "priority",
+                    "requestedDateTime"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "isTestOrder": {
+                        "type": "boolean",
+                        "description": "If this is a test order (used for sending to GBF)"
+                    },
+                    "priority": {
+                        "maximum": 10,
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "1 is highest priority and 10 is lowest",
+                        "format": "int32"
+                    },
+                    "requestedDateTime": {
+                        "type": "string",
+                        "description": "Time of the order request",
+                        "format": "date-time"
+                    },
+                    "originatingBusinessUnit": {
+                        "type": "string",
+                        "description": "The BU requesting the kit"
+                    },
+                    "orderDetails": {
+                        "minLength": 1,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Ghkoat.Core.Models.KitOrderDetail"
+                        },
+                        "description": "Each kit in the order"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "class used for all incoming kit orders"
+            },
+            "Ghkoat.Core.Models.Requests.KitOrderRequest": {
+                "required": [
+                    "kitActivationSiteUrl",
+                    "orders"
+                ],
+                "type": "object",
+                "properties": {
+                    "orders": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Ghkoat.Core.Models.Order"
+                        }
+                    },
+                    "kitActivationSiteUrl": {
+                        "type": "string",
+                        "description": "URL where the user will be redirected when activating a kit\r\nWill have the Kit ID appended to it before redirecting the user's browser window",
+                        "format": "uri"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.Requests.IncomingRequestStatus": {
+                "enum": [
+                    "Complete",
+                    "PartiallyComplete",
+                    "Accepted",
+                    "Resubmitted",
+                    "Error"
+                ],
+                "type": "string",
+                "description": "Generic status enum used to give status about a singular \"request\"\r\nlike a Kit Order or Lab Order."
+            },
+            "Ghkoat.Core.Models.Vendor.ShipmentInfo": {
+                "type": "object",
+                "properties": {
+                    "trackingNumber": {
+                        "type": "string",
+                        "description": "The Shipment Tracking Number",
+                        "nullable": true
+                    },
+                    "shippedDateTime": {
+                        "type": "string",
+                        "description": "The DateTime of the Shipment",
+                        "format": "date-time"
+                    },
+                    "shippingClass": {
+                        "type": "string",
+                        "description": "The Shipping Class (Next Day, 2nd Day, Ground, etc.)",
+                        "nullable": true
+                    },
+                    "shippingCarrier": {
+                        "type": "string",
+                        "description": "The Carrier (USPS, FedEx, etc.)",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.Vendor.KitShipment": {
+                "required": [
+                    "kitId",
+                    "verificationId"
+                ],
+                "type": "object",
+                "properties": {
+                    "kitId": {
+                        "type": "string",
+                        "description": "Unique Kit Identifier"
+                    },
+                    "verificationId": {
+                        "type": "string",
+                        "description": "a verification ID"
+                    },
+                    "outboundShipmentInfo": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Vendor.ShipmentInfo"
+                    },
+                    "inboundShipmentInfo": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Vendor.ShipmentInfo"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.Vendor.KitVendorRejection": {
+                "type": "object",
+                "properties": {
+                    "reasonCode": {
+                        "type": "string",
+                        "description": "Gets or sets the Reason Code",
+                        "nullable": true
+                    },
+                    "reasonDescription": {
+                        "type": "string",
+                        "description": "Gets or sets the Reason Description",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "This class represents the Rejection Description and Reason Code from the Kit Vendor"
+            },
+            "Ghkoat.Core.Models.KitOrderEntryResponse": {
+                "required": [
+                    "currentStatus",
+                    "orderDetailId",
+                    "orderId",
+                    "originatingBusinessUnit",
+                    "submissionCount"
+                ],
+                "type": "object",
+                "properties": {
+                    "currentStatus": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.IncomingRequestStatus"
+                    },
+                    "previousStatus": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.IncomingRequestStatus"
+                    },
+                    "originatingBusinessUnit": {
+                        "type": "string",
+                        "description": "Gets or sets the Originating Business Unit"
+                    },
+                    "orderId": {
+                        "type": "string",
+                        "description": "Gets or sets the OrderId"
+                    },
+                    "orderDetailId": {
+                        "type": "string",
+                        "description": "Gets or sets the OrderDetailId"
+                    },
+                    "submissionCount": {
+                        "type": "integer",
+                        "description": "number of times this record has been submitted",
+                        "format": "int32"
+                    },
+                    "kitShipments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Ghkoat.Core.Models.Vendor.KitShipment"
+                        },
+                        "description": "The array of successful kit shipments",
+                        "nullable": true
+                    },
+                    "rejection": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Vendor.KitVendorRejection"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Represents a single shipped or non-shipped KitOrderEntry Quantity"
+            },
+            "Ghkoat.Core.Models.LabOrder.PersonName": {
+                "required": [
+                    "firstName",
+                    "lastName"
+                ],
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "middleInitial": {
+                        "maxLength": 1,
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.MedicalDirector": {
+                "required": [
+                    "name",
+                    "npi"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PersonName"
+                    },
+                    "npi": {
+                        "type": "string"
+                    },
+                    "upin": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.EmployerInfo": {
+                "required": [
+                    "clientNumber"
+                ],
+                "type": "object",
+                "properties": {
+                    "clientNumber": {
+                        "type": "string"
+                    },
+                    "medicalDirector": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.MedicalDirector"
+                    },
+                    "medicalDirectorApproved": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.LabLocationInfo": {
+                "required": [
+                    "businessUnitCode"
+                ],
+                "type": "object",
+                "properties": {
+                    "businessUnitCode": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "id": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.PatientAddress": {
+                "required": [
+                    "city",
+                    "line1",
+                    "state",
+                    "zipCode"
+                ],
+                "type": "object",
+                "properties": {
+                    "line1": {
+                        "type": "string",
+                        "description": "Address Line 1"
+                    },
+                    "line2": {
+                        "type": "string",
+                        "description": "Address Line 2",
+                        "nullable": true
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "State"
+                    },
+                    "zipCode": {
+                        "type": "string",
+                        "description": "ZipCode"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.PhoneNumber": {
+                "required": [
+                    "areaCode",
+                    "number",
+                    "prefix"
+                ],
+                "type": "object",
+                "properties": {
+                    "areaCode": {
+                        "pattern": "^\\d{3}$",
+                        "type": "string"
+                    },
+                    "prefix": {
+                        "pattern": "^\\d{3}$",
+                        "type": "string"
+                    },
+                    "number": {
+                        "pattern": "^\\d{4}$",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.PatientDemographics": {
+                "required": [
+                    "address",
+                    "birthDate",
+                    "firstName",
+                    "gender",
+                    "lastName",
+                    "phone"
+                ],
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "middleInitial": {
+                        "maxLength": 1,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "birthDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "gender": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PatientAddress"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PhoneNumber"
+                    },
+                    "otherPhone": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PhoneNumber"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.ServiceDetailService": {
+                "required": [
+                    "fastingStatus",
+                    "serviceCodes"
+                ],
+                "type": "object",
+                "properties": {
+                    "fastingStatus": {
+                        "type": "boolean"
+                    },
+                    "serviceCodes": {
+                        "minLength": 1,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.ServiceDetail": {
+                "required": [
+                    "service"
+                ],
+                "type": "object",
+                "properties": {
+                    "diagnosis": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "service": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.ServiceDetailService"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.AskedOnOrderEntry": {
+                "required": [
+                    "question",
+                    "response",
+                    "resultCode"
+                ],
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string"
+                    },
+                    "response": {
+                        "type": "string"
+                    },
+                    "resultCode": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Captures the AoE Question/Response/ResultCode"
+            },
+            "Ghkoat.Core.Models.LabOrder.Billing": {
+                "type": "object",
+                "properties": {
+                    "billingSystemId": {
+                        "type": "string",
+                        "description": "BillingSystemId will initially be representative of LID (a guid)\r\nbut the meaning of this property may evolve as more BUs join.",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Billing class for future Billing options"
+            },
+            "Ghkoat.Core.Models.LabOrder.LabOrderRequest": {
+                "required": [
+                    "employer",
+                    "location",
+                    "memberAccountId",
+                    "observationDateTime",
+                    "orderDetailId",
+                    "orderId",
+                    "originatingBusinessUnit",
+                    "patientDemographics",
+                    "pwnOversightRequired",
+                    "qlsReqNumber",
+                    "serviceDetail",
+                    "verificationId"
+                ],
+                "type": "object",
+                "properties": {
+                    "originatingBusinessUnit": {
+                        "type": "string"
+                    },
+                    "orderId": {
+                        "type": "string"
+                    },
+                    "orderDetailId": {
+                        "type": "string"
+                    },
+                    "employer": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.EmployerInfo"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.LabLocationInfo"
+                    },
+                    "memberAccountId": {
+                        "type": "string"
+                    },
+                    "memberOrderId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "observationDateTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "orderDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "patientDemographics": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PatientDemographics"
+                    },
+                    "requestType": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "serviceDetail": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.ServiceDetail"
+                    },
+                    "tosAccepted": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "qlsReqNumber": {
+                        "type": "string"
+                    },
+                    "verificationId": {
+                        "type": "string"
+                    },
+                    "pwnOversightRequired": {
+                        "type": "boolean",
+                        "description": "Whether or not the lab order should be sent to PWN before Quanum"
+                    },
+                    "askedOnEntry": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.AskedOnOrderEntry"
+                        },
+                        "nullable": true
+                    },
+                    "billing": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.Billing"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.Requests.LabOrdersRequest": {
+                "required": [
+                    "labOrderRequest"
+                ],
+                "type": "object",
+                "properties": {
+                    "labOrderRequest": {
+                        "minLength": 1,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.LabOrderRequest"
+                        },
+                        "description": "NOTE: The singular naming of this property came from EPH. Needs to be renamed eventually"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Top level object that only contains an array of orders"
+            },
+            "Ghkoat.Pwn.Models.PhysicianReview": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "npi": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "reviewedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "upin": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.PwnOrderSummary": {
+                "required": [
+                    "physicianReview",
+                    "pwnOrderId"
+                ],
+                "type": "object",
+                "properties": {
+                    "pwnOrderId": {
+                        "type": "integer",
+                        "description": "The order ID for the PWN Order that was created",
+                        "format": "int32"
+                    },
+                    "physicianReview": {
+                        "$ref": "#/components/schemas/Ghkoat.Pwn.Models.PhysicianReview"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.LabOrderStatus": {
+                "required": [
+                    "kitId",
+                    "orderDetailId",
+                    "orderId",
+                    "originatingBusinessUnit"
+                ],
+                "type": "object",
+                "properties": {
+                    "originatingBusinessUnit": {
+                        "type": "string",
+                        "description": "The BU requesting the kit"
+                    },
+                    "orderId": {
+                        "type": "string",
+                        "description": "The associated OrderId"
+                    },
+                    "orderDetailId": {
+                        "type": "string",
+                        "description": "The associated OrderDetailId"
+                    },
+                    "kitId": {
+                        "type": "string",
+                        "description": "The Unique Kit ID related to this document"
+                    },
+                    "pwnOrderSummary": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PwnOrderSummary"
+                    },
+                    "quanumHubConfirmationNumber": {
+                        "type": "string",
+                        "description": "The Confirmation Number received from Quanum Hub for this Lab Order",
+                        "nullable": true
+                    },
+                    "exceptionData": {
+                        "type": "string",
+                        "description": "Exception/Error information received while trying to process this lab order",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Ghkoat.Core.Models.LabOrder.LabOrderResponse": {
+                "required": [
+                    "currentStatus",
+                    "kitId",
+                    "orderDetailId",
+                    "orderId",
+                    "originatingBusinessUnit",
+                    "submissionCount"
+                ],
+                "type": "object",
+                "properties": {
+                    "originatingBusinessUnit": {
+                        "type": "string"
+                    },
+                    "orderId": {
+                        "type": "string"
+                    },
+                    "orderDetailId": {
+                        "type": "string"
+                    },
+                    "kitId": {
+                        "type": "string"
+                    },
+                    "currentStatus": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.IncomingRequestStatus"
+                    },
+                    "previousStatus": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.IncomingRequestStatus"
+                    },
+                    "submissionCount": {
+                        "type": "integer",
+                        "description": "number of times this record has been submitted",
+                        "format": "int32"
+                    },
+                    "labOrderStatus": {
+                        "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.LabOrderStatus"
+                    },
+                    "errorDescription": {
+                        "type": "string",
+                        "description": "Description of the error if the Ghkoat.Core.Models.LabOrder.LabOrderResponse.CurrentStatus is \"Error\"",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Response sent back to the BU for status about this particular lab order request"
+            },
+            "ApiKitOrderPost200ApplicationJsonResponse": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Ghkoat.Core.Models.KitOrderEntryResponse"
+                }
+            },
+            "ApiKitOrderPost207ApplicationJsonResponse": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Ghkoat.Core.Models.KitOrderEntryResponse"
+                }
+            },
+            "ApiKitOrderPost400ApplicationJsonResponse": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "ApiKitLab-orderPost200ApplicationJsonResponse": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.LabOrderResponse"
+                }
+            },
+            "ApiKitLab-orderPost207ApplicationJsonResponse": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.LabOrderResponse"
+                }
+            },
+            "ApiKitLab-orderPost400ApplicationJsonResponse": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "Ocp-Apim-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ]
+}

@@ -1,0 +1,206 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "GHKOAT API - GBF",
+    "description": "Greatest Home Kit Of All Time!",
+    "version": "0.12"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:4033"
+    }
+  ],
+  "paths": {
+    "/api/gbf/shipping-info": {
+      "post": {
+        "tags": [
+          "GBF"
+        ],
+        "summary": "API Call Received from GBF to provide Shipping Information for an order",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ghkoat.Core.Models.Vendor.OrderStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "207": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ghkoat.Gbf.Models.PartialSuccessResponseError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ghkoat.Core.Models.Vendor.ProcessedOrder": {
+        "required": [
+          "inboundTrackingNumber",
+          "kitId",
+          "orderDetailId",
+          "orderId",
+          "originatingBusinessUnit",
+          "outboundShippedDateTime",
+          "outboundTrackingNumber",
+          "shippingCarrier",
+          "verificationId"
+        ],
+        "type": "object",
+        "properties": {
+          "originatingBusinessUnit": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "GHKOAT order ID"
+          },
+          "orderDetailId": {
+            "type": "string",
+            "description": "ID for the line item in the order"
+          },
+          "kitId": {
+            "type": "string",
+            "description": "Unique Kit Identifier"
+          },
+          "verificationId": {
+            "type": "string",
+            "description": "a verification ID"
+          },
+          "outboundTrackingNumber": {
+            "type": "string",
+            "description": "Tracking number associated with Kit shipped to participant's home"
+          },
+          "outboundShippedDateTime": {
+            "type": "string",
+            "description": "When the kit was shipped",
+            "format": "date-time"
+          },
+          "inboundTrackingNumber": {
+            "type": "string",
+            "description": "Tracking number associated with Kit returned to lab (Return shipping tracking number)"
+          },
+          "shippingCarrier": {
+            "type": "string",
+            "description": "Shipping carrier of the outbound shipment.  e.g. UPS,FedEx,etc."
+          },
+          "shippingClass": {
+            "type": "string",
+            "description": "The shipping class of the outbound shipment",
+            "nullable": true
+          },
+          "inboundShippingCarrier": {
+            "type": "string",
+            "description": "Shipping carrier of the inbound shipment.  e.g. UPS,FedEx,etc.",
+            "nullable": true
+          },
+          "inboundShippingClass": {
+            "type": "string",
+            "description": "The shipping class of the inbound shipment.  e.g. Overnight, Priority, etc.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO received in API call from kit vendors to provide shipping information for an order"
+      },
+      "Ghkoat.Core.Models.Vendor.RejectedOrder": {
+        "required": [
+          "orderDetailId",
+          "orderId",
+          "originatingBusinessUnit",
+          "reasonCode",
+          "reasonDescription"
+        ],
+        "type": "object",
+        "properties": {
+          "originatingBusinessUnit": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "orderDetailId": {
+            "type": "string"
+          },
+          "reasonCode": {
+            "type": "string"
+          },
+          "reasonDescription": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.Vendor.OrderStatusUpdate": {
+        "type": "object",
+        "properties": {
+          "processedOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ghkoat.Core.Models.Vendor.ProcessedOrder"
+            },
+            "description": "Successfully processed order info",
+            "nullable": true
+          },
+          "rejectedOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ghkoat.Core.Models.Vendor.RejectedOrder"
+            },
+            "description": "Rejected orders and their reasons",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Asynchronous results from a Kit Vendor for Order rejections"
+      },
+      "Ghkoat.Gbf.Models.PartialSuccessResponseError": {
+        "required": [
+          "errorMessage",
+          "orderId"
+        ],
+        "type": "object",
+        "properties": {
+          "errorMessage": {
+            "type": "string",
+            "description": "A message describing the status"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "the Input Order ID that was sent"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Class used to represent error status for a single Order processed/rejected"
+      }
+    }
+  }
+}

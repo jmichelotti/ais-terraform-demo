@@ -1,0 +1,51 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "GHKOAT API - UI",
+    "description": "Greatest Home Kit Of All Time!",
+    "version": "0.12"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:1221"
+    }
+  ],
+  "paths": {
+    "/api/kit/validate-inactive": {
+      "post": {
+        "tags": [
+          "UI"
+        ],
+        "summary": "Validates that a Kit ID is valid and it's not activated",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    }
+  },
+  "components": { }
+}

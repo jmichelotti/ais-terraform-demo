@@ -1,0 +1,96 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "GHKOAT API - UI",
+        "description": "Greatest Home Kit Of All Time!",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "https://apim-ghkoat-eus-dev.azure-api.net/ui-updated"
+        }
+    ],
+    "paths": {
+        "/api/kit/validate-inactive": {
+            "post": {
+                "tags": [
+                    "UI"
+                ],
+                "summary": "Validates that a Kit ID is valid and it's not activated",
+                "description": "Validates that a Kit ID is valid and it's not activated",
+                "operationId": "post-api-kit-validate-inactive",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiKitValidate-inactivePostRequest"
+                            },
+                            "example": "string"
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKitValidate-inactivePost200ApplicationJsonResponse"
+                                },
+                                "example": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    }
+                }
+            }
+        },
+        "/api/openapi/json": {
+            "get": {
+                "summary": "OpenAPI JSON",
+                "description": "Get OpenAPI/Swagger specs",
+                "operationId": "openapi-json",
+                "responses": {
+                    "200": {
+                        "description": null
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ApiKitValidate-inactivePostRequest": {
+                "type": "string"
+            },
+            "ApiKitValidate-inactivePost200ApplicationJsonResponse": {
+                "type": "string"
+            }
+        },
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "Ocp-Apim-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ]
+}

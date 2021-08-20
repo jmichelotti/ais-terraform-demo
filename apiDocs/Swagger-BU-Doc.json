@@ -1,0 +1,687 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "GHKOAT API - BU",
+    "description": "Greatest Home Kit Of All Time!",
+    "version": "0.12"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:7071"
+    }
+  ],
+  "paths": {
+    "/api/kit/order": {
+      "post": {
+        "tags": [
+          "BU"
+        ],
+        "summary": "Create Kit Orders - The initial call that starts the Kit Order flow",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.KitOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kit/lab-order": {
+      "post": {
+        "tags": [
+          "BU"
+        ],
+        "summary": "Create Lab Orders - Saves the Lab Order Details (so they can be sent to PWN & Quanum)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ghkoat.Core.Models.Requests.LabOrderDetailsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ghkoat.Core.Models.ParticipantInfo": {
+        "required": [
+          "firstName",
+          "lastName",
+          "phoneNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Participant's First Name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Participant's Last Name"
+          },
+          "middleInitial": {
+            "maxLength": 1,
+            "type": "string",
+            "description": "Participant's middle initial",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Participant Phone Number",
+            "format": "tel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.Address": {
+        "required": [
+          "addressLine1",
+          "city",
+          "state",
+          "zipCode"
+        ],
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string",
+            "description": "The Company Name, if any",
+            "nullable": true
+          },
+          "isBusinessAddress": {
+            "type": "boolean",
+            "description": "If this is a business address"
+          },
+          "addressLine1": {
+            "type": "string",
+            "description": "Address Line 1"
+          },
+          "addressLine2": {
+            "type": "string",
+            "description": "Address Line 2",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "description": "City"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "ZipCode"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.ShippingPreferences": {
+        "required": [
+          "carrierName",
+          "isSaturdayDeliveryRequested",
+          "shippingClass"
+        ],
+        "type": "object",
+        "properties": {
+          "carrierName": {
+            "type": "string",
+            "description": "Fedex, UPS, etc."
+          },
+          "shippingClass": {
+            "type": "string",
+            "description": "Overnight, 2-day, etc"
+          },
+          "isSaturdayDeliveryRequested": {
+            "type": "boolean",
+            "description": "If Saturday delivery was requested"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Specifies the preferences for kit shipment"
+      },
+      "Ghkoat.Core.Models.OrderDetail": {
+        "required": [
+          "inboundShippingAddress",
+          "inboundShippingPreferences",
+          "kit",
+          "orderDetailId",
+          "outboundShippingAddress",
+          "outboundShippingPreferences",
+          "participantInfo",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "orderDetailId": {
+            "type": "string",
+            "description": "The Order Detail ID"
+          },
+          "kit": {
+            "type": "string",
+            "description": "The Kit Type being requested"
+          },
+          "quantity": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Quantity of kits requested",
+            "format": "int32"
+          },
+          "participantInfo": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.ParticipantInfo"
+          },
+          "outboundShippingAddress": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.Address"
+          },
+          "outboundShippingPreferences": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.ShippingPreferences"
+          },
+          "inboundShippingAddress": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.Address"
+          },
+          "inboundShippingPreferences": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.ShippingPreferences"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.Order": {
+        "required": [
+          "id",
+          "orderDetails",
+          "originatingBusinessUnit",
+          "priority",
+          "requestedDateTime"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "isTestOrder": {
+            "type": "boolean",
+            "description": "If this is a test order (used for sending to GBF)"
+          },
+          "priority": {
+            "maximum": 10,
+            "minimum": 1,
+            "type": "integer",
+            "description": "1 is highest priority and 10 is lowest",
+            "format": "int32"
+          },
+          "requestedDateTime": {
+            "type": "string",
+            "description": "Time of the order request",
+            "format": "date-time"
+          },
+          "originatingBusinessUnit": {
+            "type": "string",
+            "description": "The BU requesting the kit"
+          },
+          "orderDetails": {
+            "minLength": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ghkoat.Core.Models.OrderDetail"
+            },
+            "description": "Each kit in the order"
+          }
+        },
+        "additionalProperties": false,
+        "description": "class used for all incoming kit orders"
+      },
+      "Ghkoat.Core.Models.Requests.KitOrderRequest": {
+        "required": [
+          "kitActivationSiteUrl",
+          "orders",
+          "shippingInfoUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "orders": {
+            "maxLength": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ghkoat.Core.Models.Order"
+            }
+          },
+          "shippingInfoUrl": {
+            "type": "string",
+            "description": "URL Where Shipping Information is posted",
+            "format": "uri"
+          },
+          "kitActivationSiteUrl": {
+            "type": "string",
+            "description": "URL where the user will be redirected when activating a kit\r\nWill have \"?kitId=xxx\" appended to it to pass the Kit ID to the BU",
+            "format": "uri"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.PersonName": {
+        "required": [
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "middleInitial": {
+            "maxLength": 1,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.MedicalDirector": {
+        "required": [
+          "name",
+          "npi",
+          "upin"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PersonName"
+          },
+          "npi": {
+            "type": "string"
+          },
+          "upin": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.EmployerInfo": {
+        "required": [
+          "clientNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "clientNumber": {
+            "type": "string"
+          },
+          "medicalDirector": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.MedicalDirector"
+          },
+          "medicalDirectorApproved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.LabLocationInfo": {
+        "required": [
+          "businessUnitCode",
+          "code",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "businessUnitCode": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.PatientAddress": {
+        "required": [
+          "city",
+          "line1",
+          "state",
+          "zipCode"
+        ],
+        "type": "object",
+        "properties": {
+          "line1": {
+            "type": "string",
+            "description": "Address Line 1"
+          },
+          "line2": {
+            "type": "string",
+            "description": "Address Line 2",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "description": "City"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "ZipCode"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.PhoneNumber": {
+        "required": [
+          "areaCode",
+          "number",
+          "prefix"
+        ],
+        "type": "object",
+        "properties": {
+          "areaCode": {
+            "pattern": "^\\d{3}$",
+            "type": "string"
+          },
+          "prefix": {
+            "pattern": "^\\d{3}$",
+            "type": "string"
+          },
+          "number": {
+            "pattern": "^\\d{4}$",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.PatientDemographics": {
+        "required": [
+          "address",
+          "birthDate",
+          "firstName",
+          "gender",
+          "lastName",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "middleInitial": {
+            "maxLength": 1,
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PatientAddress"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "phone": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PhoneNumber"
+          },
+          "otherPhone": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PhoneNumber"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.ServiceDetailService": {
+        "required": [
+          "fastingStatus",
+          "serviceCodes"
+        ],
+        "type": "object",
+        "properties": {
+          "fastingStatus": {
+            "type": "boolean"
+          },
+          "serviceCodes": {
+            "minLength": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.ServiceDetail": {
+        "required": [
+          "service"
+        ],
+        "type": "object",
+        "properties": {
+          "diagnosis": {
+            "type": "string",
+            "nullable": true
+          },
+          "service": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.ServiceDetailService"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.LabOrder.AskedOnOrderEntry": {
+        "required": [
+          "question",
+          "response",
+          "resultCode"
+        ],
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "response": {
+            "type": "string"
+          },
+          "resultCode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Captures the AoE Question/Response/ResultCode"
+      },
+      "Ghkoat.Core.Models.LabOrder.Billing": {
+        "type": "object",
+        "properties": {
+          "billingSystemId": {
+            "type": "string",
+            "description": "BillingSystemId will initially be representative of LID (a guid)\r\nbut the meaning of this property may evolve as more BUs join.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Billing class for future Billing options"
+      },
+      "Ghkoat.Core.Models.LabOrder.LabOrderInfo": {
+        "required": [
+          "employer",
+          "location",
+          "memberAccountId",
+          "memberOrderId",
+          "observationDateTime",
+          "orderDate",
+          "orderDetailId",
+          "orderId",
+          "originatingBusinessUnit",
+          "patientDemographics",
+          "pwnOversightRequired",
+          "qlsReqNumber",
+          "requestType",
+          "serviceDetail",
+          "tosAccepted",
+          "verificationId"
+        ],
+        "type": "object",
+        "properties": {
+          "originatingBusinessUnit": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "orderDetailId": {
+            "type": "string"
+          },
+          "employer": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.EmployerInfo"
+          },
+          "location": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.LabLocationInfo"
+          },
+          "memberAccountId": {
+            "type": "string"
+          },
+          "memberOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "observationDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "orderDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "patientDemographics": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.PatientDemographics"
+          },
+          "requestType": {
+            "type": "string"
+          },
+          "serviceDetail": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.ServiceDetail"
+          },
+          "tosAccepted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "qlsReqNumber": {
+            "type": "string"
+          },
+          "verificationId": {
+            "type": "string"
+          },
+          "pwnOversightRequired": {
+            "type": "boolean",
+            "description": "Whether or not the lab order should be sent to PWN before Quanum"
+          },
+          "askedOnEntry": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.AskedOnOrderEntry"
+            },
+            "nullable": true
+          },
+          "billing": {
+            "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.Billing"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ghkoat.Core.Models.Requests.LabOrderDetailsRequest": {
+        "required": [
+          "labOrderRequest"
+        ],
+        "type": "object",
+        "properties": {
+          "labOrderRequest": {
+            "minLength": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ghkoat.Core.Models.LabOrder.LabOrderInfo"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "Top level object that only contains an array of order info"
+      }
+    }
+  }
+}
